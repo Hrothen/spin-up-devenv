@@ -1,0 +1,4 @@
+---
+- name: create {{ my_username }} user
+  user: name={{ my_username }} createhome=yes group=users groups=wheel
+  become: yes

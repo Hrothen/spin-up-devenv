@@ -1,0 +1,8 @@
+- hosts: localhost
+  connection: local
+  roles:
+    - archlinux
+  vars_prompt:
+    - name: "my_username"
+      prompt: "Enter the username you wish to use"
+      private: no
