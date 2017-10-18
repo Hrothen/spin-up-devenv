@@ -2,3 +2,12 @@
 - name: create {{ my_username }} user
   user: name={{ my_username }} createhome=yes group=users groups=wheel
   become: yes
+
+- name: install xdg-user-dirs
+  pacman: name=xdg-user-dirs state=present
+  become: yes
+
+- name: setup xdg user directories
+  command: /usr/bin/xdg-user-dirs-update
+  become: yes
+  become_user: "{{ my_username }}"
