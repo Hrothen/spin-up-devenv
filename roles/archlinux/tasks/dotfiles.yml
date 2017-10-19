@@ -1,0 +1,18 @@
+---
+- name: install git
+  pacman: name=git state=present
+  become: yes
+
+- name: install pexpect for python 2
+  pacman: name=python2-pexpect state=present
+  become: yes
+
+- name: checkout dotfiles repo
+  expect:
+    command: git clone {{ dotfiles_repo }} /home/{{ my_username }}/dotfiles
+    responses:
+      (?i)username: "{{ dotfiles_username }}"
+      (?i)password: "{{ dotfiles_password }}"
+    creates: /home/{{ my_username }}/dotfiles
+  become: yes
+  become_user: "{{ my_username }}"
