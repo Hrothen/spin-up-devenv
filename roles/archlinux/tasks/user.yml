@@ -9,5 +9,7 @@
 
 - name: setup xdg user directories
   command: /usr/bin/xdg-user-dirs-update
+  args:
+    creates: /home/{{ my_username }}/Documents
   become: yes
   become_user: "{{ my_username }}"
