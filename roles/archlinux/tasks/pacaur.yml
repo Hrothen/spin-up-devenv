@@ -1,0 +1,50 @@
+---
+- name: Install base-devel
+  pacman: name=base-devel state=present
+  become: yes
+
+- name: Create temporary build directory
+  tempfile:
+    state: directory
+    suffix: build
+  register: tmp
+
+- stat: path=/usr/bin/cower
+  register: cower_bin
+
+- name: Install cower
+  when: cower_bin.stat.exists == False
+  block:
+    - name: Clone cower from AUR
+      git:
+        repo: https://aur.archlinux.org/cower.git
+        dest: "{{ tmp.path }}/cower"
+
+    - name: Get GPG keys cower needs
+      command: gpg --recv-keys --keyserver hkp://pgp.mit.edu 1EB2638FF56C0C53
+
+    - name: Build and install cower
+      command: /usr/bin/makepkg -si --noconfirm
+      args:
+        chdir: "{{ tmp.path }}/cower"
+
+- stat: path=/usr/bin/pacaur
+  register: pacaur_bin
+
+- name: Install pacaur
+  when: pacaur_bin.stat.exists == False
+  block:
+    - name: Clone pacaur from AUR
+      git:
+        repo: https://aur.archlinux.org/pacaur.git
+        dest: "{{ tmp.path }}/pacaur"
+
+    - name: Build and install pacaur
+      command: /usr/bin/makepkg -si --noconfirm
+      args:
+        chdir: "{{ tmp.path }}/pacaur"
+
+- name: Clean up temporary build directory
+  file:
+    state: absent
+    path: "{{ tmp.path }}/"

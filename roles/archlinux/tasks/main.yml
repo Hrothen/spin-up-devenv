@@ -1,3 +1,4 @@
 ---
 - include: user.yml
-  include: dotfiles.yml
+- include: dotfiles.yml
+- include: pacaur.yml
