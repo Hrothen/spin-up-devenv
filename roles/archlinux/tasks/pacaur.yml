@@ -3,14 +3,21 @@
   pacman: name=base-devel state=present
   become: yes
 
+- name: Check if cower is installed
+  stat: path=/usr/bin/cower
+  register: cower_bin
+
+- name: Check if pacaur is installed
+  stat: path=/usr/bin/pacaur
+  register: pacaur_bin
+
 - name: Create temporary build directory
+  when: cower_bin.stat.exists == False or
+        pacaur_bin.stat.exists == False
   tempfile:
     state: directory
     suffix: build
   register: tmp
-
-- stat: path=/usr/bin/cower
-  register: cower_bin
 
 - name: Install cower
   when: cower_bin.stat.exists == False
@@ -28,9 +35,6 @@
       args:
         chdir: "{{ tmp.path }}/cower"
 
-- stat: path=/usr/bin/pacaur
-  register: pacaur_bin
-
 - name: Install pacaur
   when: pacaur_bin.stat.exists == False
   block:
@@ -45,6 +49,7 @@
         chdir: "{{ tmp.path }}/pacaur"
 
 - name: Clean up temporary build directory
+  when: tmp.changed == True
   file:
     state: absent
     path: "{{ tmp.path }}/"
