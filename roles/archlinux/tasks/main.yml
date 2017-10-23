@@ -1,4 +1,4 @@
 ---
-- include: user.yml
-- include: dotfiles.yml
-- include: pacaur.yml
+- include_tasks: user.yml
+- include_tasks: dotfiles.yml
+- include_tasks: pacaur.yml
