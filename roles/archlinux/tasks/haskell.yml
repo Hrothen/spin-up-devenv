@@ -1,0 +1,30 @@
+---
+- name: Check if stack is installed
+  stat: path=/usr/bin/stack
+  register: stack_bin
+
+# Arch haskell packages are dynamically linked
+# so we install statically linked versions from
+# the AUR instead to avoid massive dependency lists
+- name: Get AUR GPG keys for stack-static
+  when: stack_bin.stat.exists == False
+  command: gpg --keyserver hkp://pgp.mit.edu --recv-keys {{ item }}
+  with_items:
+    - 702353E0F7E48EDB
+    - 575159689BEFB442
+  become: yes
+  become_user: "{{ my_username }}"
+
+- name: Install stack
+  command: /usr/bin/pacaur --noconfirm -S stack-static
+  args:
+    creates: /usr/bin/stack
+  become: yes
+  become_user: "{{ my_username }}"
+
+- name: Set up global stack project
+  command: /usr/bin/stack setup
+  args:
+    creates: /home/{{ my_username }}/.stack/global-project
+  become: yes
+  become_user: "{{ my_username }}"
