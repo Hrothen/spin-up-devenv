@@ -1,0 +1,22 @@
+---
+- name: Install reflector
+  pacman: name=reflector state=present
+  become: yes
+
+- name: Backup old mirrorlist
+  copy:
+    src: /etc/pacman.d/mirrorlist
+    dest: /etc/pacman.d/mirrorlist.old
+    force: no
+  become: yes
+
+- stat: path=/etc/pacman.d/mirrorlist
+  register: mlist
+
+- stat: path=/etc/pacman.d/mirrorlist.old
+  register: mlist_old
+
+- name: Update mirrorlist
+  when: mlist_old.stat.mtime >= mlist.stat.mtime
+  command: /usr/bin/reflector --country "United States" -l 200 -p http --sort rate --save /etc/pacman.d/mirrorlist
+  become: yes
