@@ -39,3 +39,9 @@
   become: yes
   become_user: "{{ my_username }}"
 
+- name: Install ghc-mod
+  command: /usr/bin/stack install --ghc-options="-j -O2" ghc-mod
+  args:
+    creates: "{{ stack_bindir }}/ghc-mod"
+  become: yes
+  become_user: "{{ my_username }}"
