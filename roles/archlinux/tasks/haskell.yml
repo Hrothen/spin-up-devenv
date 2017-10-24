@@ -1,4 +1,7 @@
 ---
+- set_fact:
+    stack_bindir: /home/{{ my_username }}/.local/bin
+
 - name: Check if stack is installed
   stat: path=/usr/bin/stack
   register: stack_bin
@@ -28,3 +31,11 @@
     creates: /home/{{ my_username }}/.stack/global-project
   become: yes
   become_user: "{{ my_username }}"
+
+- name: Install hlint
+  command: /usr/bin/stack install hlint
+  args:
+    creates: "{{ stack_bindir }}/hlint"
+  become: yes
+  become_user: "{{ my_username }}"
+
