@@ -33,7 +33,7 @@
   become_user: "{{ my_username }}"
 
 - name: Install hlint
-  command: /usr/bin/stack install hlint
+  command: /usr/bin/stack install --ghc-options="-j -O2" hlint
   args:
     creates: "{{ stack_bindir }}/hlint"
   become: yes
