@@ -45,3 +45,17 @@
     creates: "{{ stack_bindir }}/ghc-mod"
   become: yes
   become_user: "{{ my_username }}"
+
+- name: Install hasktags
+  command: /usr/bin/stack install --ghc-options="-j -O2" hasktags
+  args:
+    creates: "{{ stack_bindir }}/hasktags"
+  become: yes
+  become_user: "{{ my_username }}"
+
+- name: Install codex
+  command: /usr/bin/stack install --ghc-options="-j -O2" codex
+  args:
+    creates: "{{ stack_bindir }}/codex"
+  become: yes
+  become_user: "{{ my_username }}"
