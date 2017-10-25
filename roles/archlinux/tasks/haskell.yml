@@ -41,5 +41,6 @@
     - ghc-mod
     - hasktags
     - codex
+    - hdevtools
   become: yes
   become_user: "{{ my_username }}"
