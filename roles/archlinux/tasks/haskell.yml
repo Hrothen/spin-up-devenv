@@ -1,7 +1,4 @@
 ---
-- set_fact:
-    stack_bindir: /home/{{ my_username }}/.local/bin
-
 - name: Check if stack is installed
   stat: path=/usr/bin/stack
   register: stack_bin
@@ -35,7 +32,7 @@
 - name: Install haskell dev tools
   command: /usr/bin/stack install --ghc-options="-j -O2" {{ item }}
   args:
-    creates: "{{ stack_bindir }}/{{ item }}"
+    creates: /home/{{ my_username }}/.local/bin/{{ item }}
   with_items:
     - hlint
     - ghc-mod
