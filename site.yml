@@ -6,3 +6,11 @@
     - name: "my_username"
       prompt: "Enter the username you wish to use"
       private: no
+
+    - name: "git_username"
+      prompt: "Enter the name you use for git (Usually your real name)"
+      private: no
+
+    - name: "git_email"
+      prompt: "Enter the email address you use for git"
+      private: no

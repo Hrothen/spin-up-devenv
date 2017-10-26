@@ -2,6 +2,7 @@
 - include_tasks: sudoers.yml
 - include_tasks: pacman.yml
 - include_tasks: user.yml
+- include_tasks: git.yml
 - include_tasks: dotfiles.yml
 - include_tasks: pacaur.yml
 - include_tasks: c-langs.yml

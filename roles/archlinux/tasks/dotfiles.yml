@@ -1,8 +1,4 @@
 ---
-- name: install git
-  pacman: name=git state=present
-  become: yes
-
 - name: install pexpect for python 2
   pacman: name=python2-pexpect state=present
   become: yes
