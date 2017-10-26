@@ -14,3 +14,15 @@
     - name: "git_email"
       prompt: "Enter the email address you use for git"
       private: no
+
+    - name: "dotfiles_repo"
+      prompt: "Enter the url of your dotfiles repo"
+      private: no
+
+    - name: "dotfiles_username"
+      prompt: "Enter your username for whatever site hosts your dotfiles (only needed if the repo is private)"
+      private: no
+
+    - name: "dotfiles_password"
+      prompt: "Enter your password for your dotfiles repo (only needed if the repo is private)"
+      private: yes
