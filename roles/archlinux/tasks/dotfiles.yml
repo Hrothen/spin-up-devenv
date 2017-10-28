@@ -12,3 +12,64 @@
     creates: /home/{{ my_username }}/dotfiles
   become: yes
   become_user: "{{ my_username }}"
+
+- name: Install GNU Stow
+  pacman:
+    name: stow
+    state: present
+  become: yes
+
+# This next bit is a bit silly, the flexible thing to do would
+# be to walk the directories that will be stowed and just back up
+# any files that are going to collide (stow doesn't have an option
+# to do this).
+# But for some reason with_filetree doesn't want to traverse
+# /home/{{ my_username }} or anything under it, so we can't do that.
+# Instead we'll just back up these three bash files, because I know
+# that currently they're the only ones that I have in my dotfiles
+# that may exist on a new system.
+- stat:
+    path: /home/{{ my_username }}/{{ item }}
+  register: bash_files
+  with_items:
+    - .bashrc
+    - .bash_profile
+    - .bash_history
+  become: yes
+
+- name: Backup existing dotfiles
+  when:
+    - item.stat.exists == true
+    - item.stat.islnk == false
+  command: /usr/bin/mv {{ item.stat.path }} {{ item.stat.path }}.bak
+  args:
+    creates: "{{ item.stat.path }}.bak"
+  with_items: "{{ bash_files.results }}"
+  become: yes
+  become_user: "{{ my_username }}"
+
+- name: Stow dotfiles
+  command: /usr/bin/stow -v {{ item }}
+  args:
+    chdir: /home/{{ my_username }}/dotfiles
+  register: stow_result
+  changed_when: "'LINK' in stow_result.stdout"
+  with_items:
+    - haskell
+    - termite
+    - vim
+    - X11
+    - xmobar
+    - xmonad
+  become: yes
+  become_user: "{{ my_username }}"
+
+# bash gets its own command because we need to disable folding
+- name: Stow bash dotfiles
+  command: /usr/bin/stow -v --no-folding bash
+  args:
+    chdir: /home/{{ my_username }}/dotfiles
+  register: bash_stow_result
+  changed_when: "'LINK' in bash_stow_result.stdout"
+  become: yes
+  become_user: "{{ my_username }}"
