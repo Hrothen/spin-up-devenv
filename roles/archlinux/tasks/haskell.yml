@@ -1,6 +1,7 @@
 ---
 - name: Check if stack is installed
-  stat: path=/usr/bin/stack
+  stat:
+    path: /usr/bin/stack
   register: stack_bin
 
 # Arch haskell packages are dynamically linked

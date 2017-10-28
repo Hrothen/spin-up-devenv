@@ -1,14 +1,18 @@
 ---
 - name: Install base-devel
-  pacman: name=base-devel state=present
+  pacman:
+    name: base-devel
+    state: present
   become: yes
 
 - name: Check if cower is installed
-  stat: path=/usr/bin/cower
+  stat:
+    path: /usr/bin/cower
   register: cower_bin
 
 - name: Check if pacaur is installed
-  stat: path=/usr/bin/pacaur
+  stat:
+    path: /usr/bin/pacaur
   register: pacaur_bin
 
 - name: Create temporary build directory

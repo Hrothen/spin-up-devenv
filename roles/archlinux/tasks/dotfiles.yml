@@ -1,6 +1,8 @@
 ---
 - name: install pexpect for python 2
-  pacman: name=python2-pexpect state=present
+  pacman:
+    name: python2-pexpect
+    state: present
   become: yes
 
 - name: checkout dotfiles repo
