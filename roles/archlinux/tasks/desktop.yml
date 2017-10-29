@@ -1,0 +1,93 @@
+---
+- name: Install Firefox packages
+  pacman:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - firefox
+    - flashplugin
+    - mplayer #mostly for codecs
+  become: yes
+
+- name: Install apulse
+  command: /usr/bin/pacaur --noconfirm -S apulse
+  args:
+    creates: /usr/bin/apulse
+
+- name: Install xmonad and xmobar dependencies
+  pacman:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    # TODO: detect hardware and install better video drivers
+    - xorg
+    - xorg-xmessage
+    - mesa
+    - libxft
+    - libxinerama
+    - libxpm
+    - libxrandr
+    - wireless_tools
+  become: yes
+
+- name: Install standard fonts
+  pacman:
+    name: ttf-dejavu
+    state: present
+  become: yes
+
+- name: Check for AUR fonts
+  shell: fc-list | grep -i "sauce"
+  register: font_list
+  changed_when: False
+
+- name: Install fonts from AUR
+  when: font_list.rc == 1
+  command: /usr/bin/pacaur --noconfirm -S {{ item }}
+  with_items:
+    - nerd-fonts-source-code-pro
+
+- name: Install xmonad
+  command: /usr/bin/stack install --ghc-options="-j -O2" xmonad
+  args:
+    creates: /home/{{ my_username }}/.local/bin/xmonad
+  become: yes
+  become_user: "{{ my_username }}"
+
+- name: Install xmobar
+  # yes this is stupid, but stack makes you use --flag for each one
+  command: /usr/bin/stack install --ghc-options="-j -O2" --flag xmobar:with_xft --flag xmobar:with_iwlib --flag xmobar:with_xpm --flag xmobar:with_inotify --flag xmobar:with_mpd --flag xmobar:with_dbus xmobar
+  args:
+    creates: /home/{{ my_username }}/.local/bin/xmobar
+  become: yes
+  become_user: "{{ my_username }}"
+
+- name: Add xmonad paths to local bash settings
+  blockinfile:
+    path: /home/{{ my_username }}/.bash_profile_pre
+    create: yes
+    block: |
+      export XMONAD_CONFIG_DIR=~/.dotfiles/xmonad/.xmonad
+      export XMONAD_DATA_DIR=~/.xmonad
+      export XMONAD_CACHE_DIR=~/.xmonad
+  become: yes
+  become_user: "{{ my_username }}"
+
+- name: Get local xmonad binary location
+  shell: stack path --dist-dir
+  args:
+    chdir: /home/{{ my_username }}/dotfiles/xmonad/.xmonad
+  register: xmonad_path
+  changed_when: False
+  failed_when: xmonad_path.rc != 0
+  become: yes
+  become_user: "{{ my_username }}"
+
+- name: Configure xmonad
+  shell: stack setup && stack build --ghc-options="-j -O2"
+  args:
+    chdir: /home/{{ my_username }}/dotfiles/xmonad/.xmonad
+    creates: "{{ xmonad_path.stdout }}/build/xmonad-custom/xmonad-custom"
+    # creates: /home/{{ my_username }}/dotfiles/xmonad/.xmonad/{{ xmonad_path.stdout }}/build/xmonad-custom/xmonad-custom
+  become: yes
+  become_user: "{{ my_username }}"
