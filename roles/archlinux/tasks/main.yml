@@ -10,3 +10,4 @@
 - include_tasks: vim.yml
 - include_tasks: utils.yml
 - include_tasks: desktop.yml
+- include_tasks: network.yml

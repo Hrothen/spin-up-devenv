@@ -1,0 +1,22 @@
+---
+- name: Install network utilities
+  pacman:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - ntp
+    - nftables
+  become: yes
+
+- name: Enable ntp
+  service:
+    name: ntpd
+    state: started
+    enabled: yes
+  become: yes
+
+- name: Enable firewall
+  service:
+    name: nftables
+    state: started
+    enabled: yes
