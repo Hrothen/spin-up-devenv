@@ -22,6 +22,7 @@
     # TODO: detect hardware and install better video drivers
     - xorg
     - xorg-xmessage
+    - xorg-xinit
     - mesa
     - libxft
     - libxinerama
