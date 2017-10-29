@@ -1,0 +1,32 @@
+---
+- name: Install termite
+  pacman:
+    name: termite
+    state: present
+  become: yes
+
+- name: Install utility programs
+  pacman:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - tree
+    - htop
+    - hub
+    - tig
+  become: yes
+
+- name: Install lnav from AUR
+  command: /usr/bin/pacaur -S --noconfirm lnav
+  args:
+    creates: /usr/bin/lnav
+
+- name: Install haskell utility programs
+  command: /usr/bin/stack install --ghc-options="-j -O2" {{ item }}
+  args:
+    creates: /home/{{ my_username }}/.local/bin/{{ item | lower}}
+  with_items:
+    - ShellCheck
+    - pandoc
+  become: yes
+  become_user: "{{ my_username }}"
