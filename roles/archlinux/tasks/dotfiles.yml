@@ -62,7 +62,6 @@
     - vim
     - X11
     - xmobar
-    - xmonad
   become: yes
   become_user: "{{ my_username }}"
 
