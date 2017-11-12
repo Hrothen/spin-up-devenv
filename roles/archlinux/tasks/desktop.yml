@@ -41,6 +41,7 @@
   shell: fc-list | grep -i "sauce"
   register: font_list
   changed_when: False
+  ignore_errors: True
 
 - name: Install fonts from AUR
   when: font_list.rc == 1
