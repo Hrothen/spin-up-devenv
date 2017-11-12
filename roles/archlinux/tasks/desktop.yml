@@ -89,6 +89,20 @@
   args:
     chdir: /home/{{ my_username }}/dotfiles/xmonad/.xmonad
     creates: "{{ xmonad_path.stdout }}/build/xmonad-custom/xmonad-custom"
-    # creates: /home/{{ my_username }}/dotfiles/xmonad/.xmonad/{{ xmonad_path.stdout }}/build/xmonad-custom/xmonad-custom
+  become: yes
+  become_user: "{{ my_username }}"
+
+- name: Ensure the .xmonad directory exists
+  file:
+    path: /home/{{ my_username }}/.xmonad
+    state: directory
+    mode: 0755
+  become: yes
+  become_user: "{{ my_username }}"
+
+- name: Create xmonad executable
+  copy:
+    src: /home/{{ my_username }}/dotfiles/xmonad/.xmonad/{{ xmonad_path.stdout }}/build/xmonad-custom/xmonad-custom
+    dest: /home/{{ my_username }}/.xmonad/xmonad-x86_64-linux
   become: yes
   become_user: "{{ my_username }}"
