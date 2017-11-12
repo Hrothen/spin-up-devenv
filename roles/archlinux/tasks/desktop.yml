@@ -13,6 +13,8 @@
   command: /usr/bin/pacaur --noconfirm -S apulse
   args:
     creates: /usr/bin/apulse
+  become: yes
+  become_user: "{{ my_username }}"
 
 - name: Install xmonad and xmobar dependencies
   pacman:
@@ -48,6 +50,8 @@
   command: /usr/bin/pacaur --noconfirm -S {{ item }}
   with_items:
     - nerd-fonts-source-code-pro
+  become: yes
+  become_user: "{{ my_username }}"
 
 - name: Install xmonad
   command: /usr/bin/stack install --ghc-options="-j -O2" xmonad

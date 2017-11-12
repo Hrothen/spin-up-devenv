@@ -20,6 +20,8 @@
   command: /usr/bin/pacaur -S --noconfirm lnav
   args:
     creates: /usr/bin/lnav
+  become: yes
+  become_user: "{{ my_username }}"
 
 - name: Install haskell utility programs
   command: /usr/bin/stack install --ghc-options="-j -O2" {{ item }}

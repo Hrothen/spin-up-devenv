@@ -5,6 +5,7 @@
     createhome: yes
     group: users
     groups: wheel
+    password: ""
   become: yes
 
 - name: install xdg-user-dirs

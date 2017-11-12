@@ -22,6 +22,8 @@
     state: directory
     suffix: build
   register: tmp
+  become: yes
+  become_user: "{{ my_username }}"
 
 - name: Install cower
   when: cower_bin.stat.exists == False
@@ -38,6 +40,8 @@
       command: /usr/bin/makepkg -si --noconfirm
       args:
         chdir: "{{ tmp.path }}/cower"
+  become: yes
+  become_user: "{{ my_username }}"
 
 - name: Install pacaur
   when: pacaur_bin.stat.exists == False
@@ -51,6 +55,8 @@
       command: /usr/bin/makepkg -si --noconfirm
       args:
         chdir: "{{ tmp.path }}/pacaur"
+  become: yes
+  become_user: "{{ my_username }}"
 
 - name: Clean up temporary build directory
   when: tmp.changed == True
