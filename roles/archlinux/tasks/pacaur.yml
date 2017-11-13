@@ -5,61 +5,71 @@
     state: present
   become: yes
 
-- name: Check if cower is installed
-  stat:
-    path: /usr/bin/cower
-  register: cower_bin
+- name: Try to install pacaur via pacman
+  pacman:
+    name: pacaur
+    state: present
+  register: pacman_result
+  ignore_errors: True
 
-- name: Check if pacaur is installed
-  stat:
-    path: /usr/bin/pacaur
-  register: pacaur_bin
-
-- name: Create temporary build directory
-  when: cower_bin.stat.exists == False or
-        pacaur_bin.stat.exists == False
-  tempfile:
-    state: directory
-    suffix: build
-  register: tmp
-  become: yes
-  become_user: "{{ my_username }}"
-
-- name: Install cower
-  when: cower_bin.stat.exists == False
+- name: Install pacaur from AUR
+  when: pacman_result|failed
   block:
-    - name: Clone cower from AUR
-      git:
-        repo: https://aur.archlinux.org/cower.git
-        dest: "{{ tmp.path }}/cower"
+    - name: Check if cower is installed
+      stat:
+        path: /usr/bin/cower
+      register: cower_bin
 
-    - name: Get GPG keys cower needs
-      command: gpg --recv-keys --keyserver hkp://pgp.mit.edu 1EB2638FF56C0C53
+    - name: Check if pacaur is installed
+      stat:
+        path: /usr/bin/pacaur
+      register: pacaur_bin
 
-    - name: Build and install cower
-      command: /usr/bin/makepkg -si --noconfirm
-      args:
-        chdir: "{{ tmp.path }}/cower"
-  become: yes
-  become_user: "{{ my_username }}"
+    - name: Create temporary build directory
+      when: cower_bin.stat.exists == False or
+            pacaur_bin.stat.exists == False
+      tempfile:
+        state: directory
+        suffix: build
+      register: tmp
+      become: yes
+      become_user: "{{ my_username }}"
 
-- name: Install pacaur
-  when: pacaur_bin.stat.exists == False
-  block:
-    - name: Clone pacaur from AUR
-      git:
-        repo: https://aur.archlinux.org/pacaur.git
-        dest: "{{ tmp.path }}/pacaur"
+    - name: Install cower
+      when: cower_bin.stat.exists == False
+      block:
+        - name: Clone cower from AUR
+          git:
+            repo: https://aur.archlinux.org/cower.git
+            dest: "{{ tmp.path }}/cower"
 
-    - name: Build and install pacaur
-      command: /usr/bin/makepkg -si --noconfirm
-      args:
-        chdir: "{{ tmp.path }}/pacaur"
-  become: yes
-  become_user: "{{ my_username }}"
+        - name: Get GPG keys cower needs
+          command: gpg --recv-keys --keyserver hkp://pgp.mit.edu 1EB2638FF56C0C53
 
-- name: Clean up temporary build directory
-  when: tmp.changed == True
-  file:
-    state: absent
-    path: "{{ tmp.path }}/"
+        - name: Build and install cower
+          command: /usr/bin/makepkg -si --noconfirm
+          args:
+            chdir: "{{ tmp.path }}/cower"
+      become: yes
+      become_user: "{{ my_username }}"
+
+    - name: Install pacaur
+      when: pacaur_bin.stat.exists == False
+      block:
+        - name: Clone pacaur from AUR
+          git:
+            repo: https://aur.archlinux.org/pacaur.git
+            dest: "{{ tmp.path }}/pacaur"
+
+        - name: Build and install pacaur
+          command: /usr/bin/makepkg -si --noconfirm
+          args:
+            chdir: "{{ tmp.path }}/pacaur"
+      become: yes
+      become_user: "{{ my_username }}"
+
+    - name: Clean up temporary build directory
+      when: tmp.changed == True
+      file:
+        state: absent
+        path: "{{ tmp.path }}/"
