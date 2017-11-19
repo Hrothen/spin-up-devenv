@@ -20,8 +20,16 @@
   command: /usr/bin/pacaur -S --noconfirm lnav
   args:
     creates: /usr/bin/lnav
+  register: lnav_result
+  until: lnav_result|succeeded
+  ignore_errors: True
   become: yes
   become_user: "{{ my_username }}"
+
+- name: Report lnav install failure
+  fail:
+    msg: "Failed to install lnav from AUR: {{ lnav_result.stderr }}"
+  when: lnav_result|failed
 
 - name: Install haskell utility programs
   command: /usr/bin/stack install --ghc-options="-j -O2" {{ item }}

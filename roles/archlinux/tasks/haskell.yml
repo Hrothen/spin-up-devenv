@@ -20,8 +20,16 @@
   command: /usr/bin/pacaur --noconfirm -S stack-static
   args:
     creates: /usr/bin/stack
+  register: stack_result
+  until: stack_result|succeeded
+  ignore_errors: True
   become: yes
   become_user: "{{ my_username }}"
+
+- name: Report stack install failure
+  fail:
+    msg: "Failed to install stack from AUR: {{ stack_result.stderr }}"
+  when: stack_result|failed
 
 - name: Set up global stack project
   command: /usr/bin/stack setup

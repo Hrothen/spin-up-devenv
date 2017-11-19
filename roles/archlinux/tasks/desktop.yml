@@ -13,8 +13,16 @@
   command: /usr/bin/pacaur --noconfirm -S apulse
   args:
     creates: /usr/bin/apulse
+  register: apulse_result
+  until: apulse_result|succeeded
+  ignore_errors: True
   become: yes
   become_user: "{{ my_username }}"
+
+- name: Report apulse install error
+  fail:
+    msg: "Failed to install apulse from the AUR: {{ apulse_result.stderr }}"
+  when: apulse_result|failed
 
 - name: Install xmonad and xmobar dependencies
   pacman:
@@ -50,8 +58,16 @@
   command: /usr/bin/pacaur --noconfirm -S {{ item }}
   with_items:
     - nerd-fonts-source-code-pro
+  register: font_result
+  until: font_result|succeeded
+  ignore_errors: True
   become: yes
   become_user: "{{ my_username }}"
+
+- name: Report font error
+  fail:
+    msg: "Failed to install fonts from AUR: {{ font_result.stderr }}"
+  when: font_result|failed
 
 - name: Install xmonad
   command: /usr/bin/stack install --ghc-options="-j -O2" xmonad
