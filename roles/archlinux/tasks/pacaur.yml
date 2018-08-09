@@ -5,6 +5,12 @@
     state: present
   become: yes
 
+- name: Install pacman-contrib
+  pacman:
+    name: pacman-contrib
+    state: present
+  become: yes
+
 - name: Try to install pacaur via pacman
   pacman:
     name: pacaur
