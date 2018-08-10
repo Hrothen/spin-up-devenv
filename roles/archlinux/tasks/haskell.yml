@@ -30,11 +30,12 @@
   become_user: "{{ my_username }}"
 
 - name: Install haskell dev tools
-  command: /usr/bin/stack install --ghc-options="-j -O2" {{ item }}
+  command: /usr/bin/stack install --copy-compiler-tool --ghc-options="-j -O2" {{ item }}
   args:
     creates: /home/{{ my_username }}/.local/bin/{{ item }}
   with_items:
     - hlint
+    - hoogle
     - ghc-mod
     - hasktags
     - codex
